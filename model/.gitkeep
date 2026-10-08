@@ -1,0 +1,2 @@
+# Model directory
+# Contains trained model weights (e.g. mobilenet_v2_crop_disease.pth) and label mappings.

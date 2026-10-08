@@ -1,0 +1,40 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Python Bytecode & Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Uploads and temporary files
+uploads/*
+!uploads/.gitkeep
+
+# Model weights and checkpoints (optional large files)
+*.pth
+*.pt
+*.h5
+*.onnx
+!model/.gitkeep
+
+# Database
+database/*.db
+database/*.sqlite3
+!database/.gitkeep
+
+# Jupyter Notebook Checkpoints
+.ipynb_checkpoints/
+
+# Node & Frontend Build (if used)
+node_modules/
+dist/
+
+# Operating System & IDE
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AgriVision AI - Crop Disease Detection & Recommendations</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Top Navigation Header -->
+    <header class="navbar">
+      <div class="nav-brand">
+        <span class="brand-icon">🌿</span>
+        <div class="brand-info">
+          <h1>AgriVision AI</h1>
+          <p>AI Crop Disease Detection & Agronomic Recommendation Platform</p>
+        </div>
+      </div>
+      <div class="nav-actions">
+        <button id="btnOpenArchitecture" class="nav-btn" title="View System Architecture">
+          <span class="icon">📐</span> Architecture
+        </button>
+        <button id="btnOpenCatalog" class="nav-btn" title="Crop Disease Knowledge Base">
+          <span class="icon">📖</span> Disease Guide
+        </button>
+        <button id="themeToggleBtn" class="theme-toggle" title="Toggle Light/Dark Mode">
+          <span id="themeIcon">🌙</span>
+        </button>
+        <div id="backendStatus" class="status-badge connecting">
+          <span class="status-dot"></span>
+          <span id="statusText">Checking Flask Backend...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Architecture Pipeline Flow -->
+    <div class="pipeline-banner">
+      <div class="pipeline-step active" id="pipeStep1">
+        <div class="step-num">1</div>
+        <div class="step-details">
+          <span class="step-title">Web Interface</span>
+          <span class="step-sub">Upload Leaf</span>
+        </div>
+      </div>
+      <div class="pipeline-arrow">➔</div>
+      <div class="pipeline-step" id="pipeStep2">
+        <div class="step-num">2</div>
+        <div class="step-details">
+          <span class="step-title">Flask Backend</span>
+          <span class="step-sub">Python Server</span>
+        </div>
+      </div>
+      <div class="pipeline-arrow">➔</div>
+      <div class="pipeline-step" id="pipeStep3">
+        <div class="step-num">3</div>
+        <div class="step-details">
+          <span class="step-title">Image Processing</span>
+          <span class="step-sub">OpenCV / Pillow</span>
+        </div>
+      </div>
+      <div class="pipeline-arrow">➔</div>
+      <div class="pipeline-step" id="pipeStep4">
+        <div class="step-num">4</div>
+        <div class="step-details">
+          <span class="step-title">AI Model</span>
+          <span class="step-sub">MobileNetV2 / CNN</span>
+        </div>
+      </div>
+      <div class="pipeline-arrow">➔</div>
+      <div class="pipeline-step" id="pipeStep5">
+        <div class="step-num">5</div>
+        <div class="step-details">
+          <span class="step-title">Detection</span>
+          <span class="step-sub">Disease & Risk</span>
+        </div>
+      </div>
+      <div class="pipeline-arrow">➔</div>
+      <div class="pipeline-step" id="pipeStep6">
+        <div class="step-num">6</div>
+        <div class="step-details">
+          <span class="step-title">Recommendation</span>
+          <span class="step-sub">Symptoms & Cure</span>
+        </div>
+      </div>
+      <div class="pipeline-arrow">➔</div>
+      <div class="pipeline-step" id="pipeStep7">
+        <div class="step-num">7</div>
+        <div class="step-details">
+          <span class="step-title">Result on Site</span>
+          <span class="step-sub">Prescription</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Stats Bar -->
+    <section class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-blue">📊</div>
+        <div>
+          <div class="stat-val" id="statTotalScans">0</div>
+          <div class="stat-lbl">Total Diagnoses</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-green">🍃</div>
+        <div>
+          <div class="stat-val" id="statHealthyCount">0</div>
+          <div class="stat-lbl">Healthy Crops</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-red">⚠️</div>
+        <div>
+          <div class="stat-val" id="statInfectedCount">0</div>
+          <div class="stat-lbl">Infected Specimens</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon stat-icon-purple">🎯</div>
+        <div>
+          <div class="stat-val" id="statAvgConfidence">N/A</div>
+          <div class="stat-lbl">Mean AI Confidence</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Workspace Grid -->
+    <main class="main-grid">
+      <!-- Left Column: Upload & Image Processing -->
+      <section class="card upload-card">
+        <div class="card-header">
+          <div>
+            <h2>1. Leaf Specimen Diagnostic Workbench</h2>
+            <p>Upload a high-resolution photo of a crop leaf or select from benchmark test samples</p>
+          </div>
+          <button id="btnResetUpload" class="btn btn-secondary btn-sm" title="Reset current selection">Clear</button>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div id="dropZone" class="drop-zone">
+          <input type="file" id="imageInput" accept="image/*" class="file-input">
+          <div id="dropPrompt" class="drop-prompt">
+            <div class="upload-icon-circle">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                <polyline points="17 8 12 3 7 8"></polyline>
+                <line x1="12" y1="3" x2="12" y2="15"></line>
+              </svg>
+            </div>
+            <h3>Drag & Drop Leaf Photo Here</h3>
+            <p>or <span class="highlight">browse from device</span></p>
+            <span class="file-limits">Supports JPG, PNG, WEBP, BMP (Max 16 MB)</span>
+          </div>
+
+          <div id="previewContainer" class="preview-container hidden">
+            <img id="imagePreview" alt="Leaf Preview" class="preview-img">
+            <div class="preview-actions">
+              <button id="changeImageBtn" class="btn btn-secondary btn-sm">Change Photo</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sample Leaf Presets -->
+        <div class="sample-presets">
+          <div class="preset-header">
+            <span class="preset-label">Test with standard benchmark leaf specimens:</span>
+          </div>
+          <div class="preset-buttons">
+            <button class="btn-preset" data-sample="tomato-early-blight">🍅 Tomato Early Blight</button>
+            <button class="btn-preset" data-sample="potato-late-blight">🥔 Potato Late Blight</button>
+            <button class="btn-preset" data-sample="corn-rust">🌽 Corn Common Rust</button>
+            <button class="btn-preset" data-sample="apple-scab">🍎 Apple Scab</button>
+            <button class="btn-preset" data-sample="grape-rot">🍇 Grape Black Rot</button>
+            <button class="btn-preset" data-sample="healthy-leaf">🍃 Healthy Tomato Leaf</button>
+          </div>
+        </div>
+
+        <!-- Action Button -->
+        <div class="action-bar">
+          <button id="diagnoseBtn" class="btn btn-primary btn-lg">
+            <span class="btn-icon">⚡</span>
+            <span id="diagnoseBtnText">Run AI Diagnosis</span>
+          </button>
+        </div>
+
+        <!-- OpenCV Image Processing Inspection View -->
+        <div id="visionInspection" class="vision-inspection">
+          <div class="vision-header">
+            <div class="vision-title">
+              <span class="vision-badge">OpenCV / Pillow</span>
+              <h3>Image Processing & Feature Pipeline</h3>
+            </div>
+            <div class="vision-toggles">
+              <button id="btnShowOriginal" class="tab-btn">Original</button>
+              <button id="btnShowProcessed" class="tab-btn active">224x224 RGB</button>
+              <button id="btnShowEdges" class="tab-btn">Contour / Edges</button>
+              <button id="btnShowHeatmap" class="tab-btn">Grad-CAM Heatmap</button>
+            </div>
+          </div>
+          <div class="vision-viewport">
+            <img id="originalImgView" class="vision-img hidden" alt="Original Leaf">
+            <img id="processedImgView" class="vision-img" alt="Preprocessed 224x224 Leaf">
+            <canvas id="edgeCanvasView" class="vision-img hidden"></canvas>
+            <img id="heatmapImgView" class="vision-img hidden" alt="Grad-CAM Attention Heatmap">
+          </div>
+          <p class="vision-caption" id="visionCaption">Preprocessed input: Resized to 224×224, normalized channels [0.485, 0.456, 0.406] ready for MobileNetV2.</p>
+        </div>
+      </section>
+
+      <!-- Right Column: Diagnosis Results & Recommendations -->
+      <section class="card result-card">
+        <div class="card-header">
+          <div>
+            <h2>2. Disease Detection & Recommendation Result</h2>
+            <p>AI foliar classification, confidence probability, and validated agronomic remedies</p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyResultState" class="empty-state">
+          <div class="empty-illustration">🔬</div>
+          <h3>Awaiting Diagnostic Trigger</h3>
+          <p>Select a leaf specimen preset or upload a leaf photo, then click <strong>"Run AI Diagnosis"</strong> to start the MobileNetV2 / CNN inference pipeline.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingState" class="loading-state hidden">
+          <div class="pulse-loader"></div>
+          <h3 id="loadingHeadline">AI Deep Learning Model Analyzing Leaf...</h3>
+          <p id="loadingStatusText">Applying OpenCV normalization & MobileNetV2 convolutional layers...</p>
+          <div class="loading-progress-track">
+            <div id="loadingProgressBar" class="loading-progress-fill"></div>
+          </div>
+        </div>
+
+        <!-- Result Container -->
+        <div id="resultContent" class="result-content hidden">
+          <!-- Primary Diagnosis Header Card -->
+          <div class="diagnosis-summary-box">
+            <div class="diagnosis-primary">
+              <span id="cropName" class="crop-tag">—</span>
+              <h3 id="diseaseName" class="disease-title">Awaiting Analysis</h3>
+              <p id="scientificName" class="scientific-name"></p>
+            </div>
+            <div class="diagnosis-badges">
+              <div id="statusBadge" class="badge">Awaiting specimen</div>
+              <div id="severityBadge" class="badge">Severity: —</div>
+            </div>
+          </div>
+
+          <!-- Confidence Meter & Top-3 Distribution -->
+          <div class="confidence-box">
+            <div class="confidence-header">
+              <span class="label">Detection Confidence Score</span>
+              <span id="confidencePercent" class="value">—</span>
+            </div>
+            <div class="progress-bar-bg">
+              <div id="confidenceBar" class="progress-bar-fill" style="width: 0%;"></div>
+            </div>
+
+            <!-- Top-3 Softmax Predictions -->
+            <div class="top3-predictions">
+              <span class="sub-label">MobileNetV2 Softmax Probability Distribution:</span>
+              <div id="top3List" class="top3-list"></div>
+            </div>
+          </div>
+
+          <!-- Recommendations Tabs (Symptoms, Treatment, Prevention) -->
+          <div class="recommendations-container">
+            <div class="rec-tabs">
+              <button class="rec-tab-btn active" data-tab="symptoms">🔍 Foliar Symptoms</button>
+              <button class="rec-tab-btn" data-tab="treatment">💊 Recommended Treatment</button>
+              <button class="rec-tab-btn" data-tab="prevention">🛡️ Agronomic Prevention</button>
+            </div>
+
+            <div class="rec-tab-content">
+              <!-- Symptoms Tab -->
+              <div id="tabSymptoms" class="tab-pane active">
+                <div class="rec-card">
+                  <div class="rec-card-header">
+                    <span class="rec-icon">🔬</span>
+                    <h4 class="rec-title">Identified Visual Symptoms & Lesions:</h4>
+                  </div>
+                  <p id="symptomsText" class="rec-text"></p>
+                </div>
+              </div>
+
+              <!-- Treatment Tab -->
+              <div id="tabTreatment" class="tab-pane">
+                <div class="rec-card">
+                  <div class="rec-card-header">
+                    <span class="rec-icon">🧪</span>
+                    <h4 class="rec-title">Prescribed Remedies & Biological Controls:</h4>
+                  </div>
+                  <div id="treatmentText" class="rec-text pre-wrap"></div>
+                </div>
+              </div>
+
+              <!-- Prevention Tab -->
+              <div id="tabPrevention" class="tab-pane">
+                <div class="rec-card">
+                  <div class="rec-card-header">
+                    <span class="rec-icon">🌱</span>
+                    <h4 class="rec-title">Preventative Crop Management Guidelines:</h4>
+                  </div>
+                  <div id="preventionText" class="rec-text pre-wrap"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Print / Action Row -->
+          <div class="result-actions">
+            <button id="printReportBtn" class="btn btn-secondary btn-sm">🖨️ Print Prescription Report</button>
+            <button id="saveHistoryBtn" class="btn btn-secondary btn-sm">💾 Save Record</button>
+            <span id="scanTimestamp" class="scan-id-tag">Scan ID: CR-SCAN-101</span>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Recent Diagnoses History Bar -->
+    <section class="card history-section">
+      <div class="history-header">
+        <div>
+          <h3>Recent Foliar Diagnoses Log</h3>
+          <p>Chronological record of recent field leaf specimens and diagnostic results</p>
+        </div>
+        <button id="btnClearHistory" class="btn btn-secondary btn-sm">Clear History</button>
+      </div>
+      <div id="historyList" class="history-grid">
+        <p class="no-history-text">No scans recorded yet. Perform your first diagnosis above!</p>
+      </div>
+    </section>
+
+    <!-- Modal 1: System Architecture Diagram Flow -->
+    <div id="architectureModal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span class="modal-icon">📐</span>
+            <h3>AI Crop Disease Detection Architecture</h3>
+          </div>
+          <button class="modal-close" id="btnCloseArchitecture">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="ascii-diagram-box">
+            <pre>
+                    AI CROP DISEASE PROJECT
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │   Web Interface   │  HTML5 / Modern CSS3 / Dynamic JS
+                  │ HTML/CSS/JS       │  Drag-Drop, Leaf Preview, Top-3 Gauge
+                  └─────────┬─────────┘
+                            │
+                     Upload Image (JPG / PNG / WEBP)
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │   Flask Backend   │  Python REST API (Port 5000)
+                  │     Python        │  CORS Enabled, SQLite Logging
+                  └─────────┬─────────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │ Image Processing  │  RGB Normalization (224x224)
+                  │ OpenCV / Pillow   │  Grad-CAM COLORMAP_JET Attention Maps
+                  └─────────┬─────────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │   AI Model        │  Depthwise Separable Convolutions
+                  │ MobileNetV2/CNN   │  Softmax Probability Classification
+                  └─────────┬─────────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │ Disease Detection │  Identified Pathogen, Status (Healthy/Infected),
+                  └─────────┬─────────┘  Severity Rating (None to Critical)
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │ Recommendation    │  Botanical Symptoms, Cultural Practices,
+                  │ Symptoms/Treatment│  Biological & Chemical Remedies (Mancozeb, Copper)
+                  │ Prevention        │  Crop Rotation, Resistant Cultivars
+                  └─────────┬─────────┘
+                            │
+                            ▼
+                  ┌───────────────────┐
+                  │ Result on Website │  Interactive Prescription Card, Vision Inspector,
+                  └───────────────────┘  Printable Report & History Storage
+            </pre>
+          </div>
+          <div class="tech-stack-pills">
+            <span class="pill">HTML5</span>
+            <span class="pill">CSS3 / Glassmorphism</span>
+            <span class="pill">Vanilla JavaScript</span>
+            <span class="pill">HTML5 Canvas CV</span>
+            <span class="pill">Python Flask</span>
+            <span class="pill">OpenCV</span>
+            <span class="pill">Pillow</span>
+            <span class="pill">MobileNetV2</span>
+            <span class="pill">PyTorch</span>
+            <span class="pill">SQLite</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal 2: Crop Disease Knowledge Catalog -->
+    <div id="catalogModal" class="modal-overlay hidden">
+      <div class="modal-card modal-large">
+        <div class="modal-header">
+          <div class="modal-title">
+            <span class="modal-icon">📖</span>
+            <h3>Crop Disease Knowledge Directory</h3>
+          </div>
+          <button class="modal-close" id="btnCloseCatalog">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div class="catalog-toolbar">
+            <input type="text" id="catalogSearch" placeholder="Search by crop, disease, or pathogen..." class="catalog-search-input">
+            <div class="catalog-filter-chips">
+              <button class="filter-chip active" data-crop="all">All Crops</button>
+              <button class="filter-chip" data-crop="Tomato">Tomato</button>
+              <button class="filter-chip" data-crop="Potato">Potato</button>
+              <button class="filter-chip" data-crop="Corn (Maize)">Corn</button>
+              <button class="filter-chip" data-crop="Apple">Apple</button>
+              <button class="filter-chip" data-crop="Grape">Grape</button>
+              <button class="filter-chip" data-crop="Bell Pepper">Pepper</button>
+              <button class="filter-chip" data-crop="Snake Plant">Snake Plant</button>
+            </div>
+          </div>
+          <div id="catalogGrid" class="catalog-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <p>🌿 <strong>AgriVision AI</strong> • End-to-End Crop Disease Detection & Agronomic Recommendation System</p>
+      <p class="footer-sub">MobileNetV2 / CNN Deep Learning • OpenCV & Pillow Preprocessing • Flask Backend • Standalone Web Frontend</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
